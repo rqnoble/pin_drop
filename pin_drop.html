@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+    <meta charset="UTF-8">
+  </head> 
+  <body>
+    <canvas id="myCanvas" width="600" height="600"></canvas>
+    <script>
+
+      function calcHit(context, pin, length){
+
+
+      }
+
+      function isHit(A, Z, target){
+        //console.log(Math.floor(A) + " to " + Math.floor(Z));
+        var hit = 0;
+        if (A > Z){
+          var tmp = A;
+          A = Z;
+          Z = tmp;
+        }
+        for (var x = Math.floor(A); x <= Math.floor(Z); x++){
+          //console.log(x, target, x % target);
+          if ( x%target == 0){
+            hit = 1;
+            break;
+          }
+        }
+      //  console.log("hit? " + hit);
+        return hit;
+      }
+
+      function rand(max) {
+        return Math.floor(Math.random() * (max + 1.0))
+      }
+
+      function toRadian(angle){
+        return angle * Math.PI / 180.0;
+      }
+
+      function show_me90(){
+        return 1;
+      }
+
+      function drawCircle(context, origin, radius){
+        context.beginPath();
+        context.arc(origin[0], origin[1], radius, 0, 2 * Math.PI, false);
+        context.stroke();
+      }
+
+      function drawLine(context, x1, x2, y1, y2, color){
+        context.beginPath();
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.strokeStyle = color;
+        context.stroke();
+      }
+
+      function Pin(length, cwidth, cheight){
+        this.length = length;
+        this.radius = length/2;
+        this.theta = rand(360);
+        //this.theta = 31.79;
+        this.rotation = toRadian(this.theta);
+        this.origin = [rand(cwidth), rand(cheight)];
+        this.start = [(this.origin[0] - (Math.cos(this.rotation)) * this.radius), (this.origin[1] - Math.sin(this.rotation) * this.radius)]
+        this.end = [(this.origin[0] + Math.cos(this.rotation) * this.radius), (this.origin[1] + Math.sin(this.rotation) * this.radius)]
+        this.width = Math.abs(this.end[0] - this.start[0])
+        this.hitChance = Math.round(this.width / this.length * 100 )
+        //console.log("Pin drop...");
+        //console.log(this.length);
+        //console.log(this.origin);
+        //console.log(this.start);
+        //console.log(this.end);
+        //console.log(this.hitChance)
+      }
+
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+
+      // do cool things with the context
+      context.font = '40pt Calibri';
+      context.fillStyle = 'blue';
+      //context.fillText(Math.sin(rand(45) * 3.1459 / 180.0), 150, 100);
+      //context.fillText(rand(350), 150, 200);
+      
+
+      var length = 40.0;
+      for ( var lines = length; lines <= canvas.width; lines += length ){
+     //      console.log("whered everybody grow...")
+           context.beginPath();
+           context.moveTo(lines, 0);
+           context.lineTo(lines, canvas.height);
+           context.stroke();
+      };
+
+      var hit = 0;
+      var drops = 500
+      for (var p = 0; p < drops; p++){
+        var P = new Pin(length, canvas.width, canvas.height);
+        //context.beginPath();
+        //context.moveTo(P.start[0], P.start[1]);
+        //context.lineTo(P.end[0], P.end[1]);
+        //context.stroke();
+        //drawCircle(context, P.origin, length/2);
+        //drawLine(context, P.start[0], P.end[0], P.start[1], P.end[1]);
+        //drawLine(context, P.start[0], P.end[0], P.origin[1], P.origin[1]);
+        if ( isHit(P.start[0], P.end[0], length) == 1){
+          drawLine(context, P.start[0], P.end[0], P.start[1], P.end[1], '#FF0000');
+          hit++;
+        }else{
+          drawLine(context, P.start[0], P.end[0], P.start[1], P.end[1], '#000000');
+        }
+      }
+
+      context.fillText("HITrate %" + Math.round(hit / drops * 100), 100,200)
+
+    </script>
+  </body>
+</html>  
